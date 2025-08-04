@@ -1,7 +1,4 @@
 {
-  "cli": {
-    "appVersionSource": "local"
-  },
   "build": {
     "preview": {
       "android": {
@@ -10,7 +7,7 @@
     },
     "production": {
       "android": {
-        "buildType": "apk"
+        "buildType": "app-bundle"
       }
     }
   }

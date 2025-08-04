@@ -5,21 +5,16 @@ export default function CompactLoginScreen({ navigation }) {
   return (
     <View className="flex-1 bg-white px-6 justify-center">
       {/* Header */}
-      {/* Header */}
-      {/* Header */}
-      {/* Header */}
-      {/* Header */}
-      {/* Header */}
       <View className="items-center mb-8">
         <View className="w-16 h-16 bg-gray-50 rounded-[10px] border border-gray-100 justify-center items-center mb-4 overflow-hidden">
           <Image
-            source={require('D:/za6zo/src/assets/images/Za6zo.png')}
-            style={{ width: 80, height: 80, resizeMode: 'contain' }}
+           source={require('../../assets/images/Za6zo.png')}
+           style={{ width: 80, height: 80, resizeMode: 'contain' }}
           />
         </View>
         <View className="items-center">
-          <Text className="text-2xl font-bold text-gray-900 mb-1">Welcccccccccccccome</Text>
-          <Text className="text-sm text-gray-500">Access yourrrrrrrrr account</Text>
+          <Text className="text-2xl font-bold text-gray-900 mb-1">Welcorrrrrrrrrme</Text>
+          <Text className="text-sm text-gray-500">Access your account</Text>
         </View>
       </View>
 
@@ -79,6 +74,9 @@ export default function CompactLoginScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
+      {/* Footer */}
+      {/* Footer */}
+      {/* Footer */}
       {/* Footer */}
       <View className="flex-row justify-center pb-4">
         <Text className="text-sm text-gray-500">No account?</Text>

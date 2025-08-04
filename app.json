@@ -42,8 +42,9 @@
     },
     "extra": {
       "eas": {
-        "projectId": "com.za6zo.taxido"
+        "projectId": "6eb09086-9809-41c5-800f-8073126ae935"
       }
-    }
+    },
+    "owner": "zeeshanahmadroghani"
   }
 }
