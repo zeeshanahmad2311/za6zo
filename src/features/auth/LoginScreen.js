@@ -5,6 +5,9 @@ export default function CompactLoginScreen({ navigation }) {
   return (
     <View className="flex-1 bg-white px-6 justify-center">
       {/* Header */}
+      {/* Header */}
+      {/* Header */}
+      {/* Header */}
       <View className="items-center mb-8">
         <View className="w-16 h-16 bg-gray-50 rounded-[10px] border border-gray-100 justify-center items-center mb-4 overflow-hidden">
           <Image
