@@ -1,19 +1,27 @@
 "use client"
 
+import { useClerk, useUser } from '@clerk/clerk-expo'
 import { Feather, FontAwesome5, MaterialIcons } from "@expo/vector-icons"
 import { BlurView } from "expo-blur"
 import * as Haptics from "expo-haptics"
 import { LinearGradient } from "expo-linear-gradient"
 import { useState } from "react"
-import { Alert, Dimensions, Platform, ScrollView, StatusBar, Switch, Text, TouchableOpacity, View } from "react-native"
+import { Alert, Dimensions, Image, Platform, ScrollView, StatusBar, Switch, Text, TextInput, TouchableOpacity, View } from "react-native"
 
 const { width: screenWidth } = Dimensions.get("window")
 const statusBarHeight = Platform.OS === "ios" ? 44 : StatusBar.currentHeight || 0
 
 const SettingsScreen = ({ navigation }) => {
+  const { user, isLoaded } = useUser()
+  const { signOut } = useClerk()
   const [notificationsEnabled, setNotificationsEnabled] = useState(true)
   const [locationEnabled, setLocationEnabled] = useState(true)
   const [darkModeEnabled, setDarkModeEnabled] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const [firstName, setFirstName] = useState(user?.firstName || '')
+  const [lastName, setLastName] = useState(user?.lastName || '')
+  const [profileImage, setProfileImage] = useState(user?.imageUrl || '')
+  const [saving, setSaving] = useState(false)
 
   const settingsOptions = [
     {
@@ -134,12 +142,27 @@ const SettingsScreen = ({ navigation }) => {
       {
         text: "Logout",
         style: "destructive",
-        onPress: () => {
-          // Handle logout logic
-          console.log("User logged out")
+        onPress: async () => {
+          await signOut()
         },
       },
     ])
+  }
+
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      await user.update({ firstName, lastName })
+      // Clerk does not support direct image upload from client, so image update is omitted here
+      setEditing(false)
+    } catch (e) {
+      Alert.alert('Error', 'Failed to update profile')
+    }
+    setSaving(false)
+  }
+
+  if (!isLoaded) {
+    return <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}><Text>Loading...</Text></View>
   }
 
   return (
@@ -162,13 +185,12 @@ const SettingsScreen = ({ navigation }) => {
             <Text className="text-white text-xl font-bold">Settings</Text>
             <Text className="text-white/80 text-sm">Manage your preferences</Text>
           </View>
-
           <TouchableOpacity
-            onPress={() => navigation.navigate("ProfileScreen")}
+            onPress={handleLogout}
             className="w-12 h-12 bg-white/20 rounded-full items-center justify-center border border-white/30"
             activeOpacity={0.8}
           >
-            <MaterialIcons name="person" size={24} color="white" />
+            <MaterialIcons name="logout" size={24} color="white" />
           </TouchableOpacity>
         </View>
       </LinearGradient>
@@ -179,24 +201,54 @@ const SettingsScreen = ({ navigation }) => {
           <BlurView intensity={80} style={{ borderRadius: 20 }} className="overflow-hidden border border-gray-200">
             <LinearGradient colors={["rgba(255,255,255,0.95)", "rgba(255,255,255,0.85)"]} className="p-6">
               <View className="flex-row items-center">
-                <View className="w-16 h-16 bg-indigo-100 rounded-full items-center justify-center mr-4 border border-indigo-200">
-                  <Text className="text-2xl">👤</Text>
+                <View className="w-16 h-16 bg-indigo-100 rounded-full items-center justify-center mr-4 border border-indigo-200 overflow-hidden">
+                  {user?.imageUrl ? (
+                    <Image source={{ uri: user.imageUrl }} style={{ width: 64, height: 64, borderRadius: 32 }} />
+                  ) : (
+                    <Text style={{ fontSize: 32, color: '#6366f1', fontWeight: 'bold' }}>{user?.firstName ? user.firstName[0].toUpperCase() : user?.emailAddresses?.[0]?.emailAddress[0].toUpperCase()}</Text>
+                  )}
                 </View>
                 <View className="flex-1">
-                  <Text className="text-gray-900 text-lg font-bold">Alex Johnson</Text>
-                  <Text className="text-gray-600 text-sm">alex.johnson@email.com</Text>
+                  {editing ? (
+                    <>
+                      <TextInput
+                        value={firstName}
+                        onChangeText={setFirstName}
+                        placeholder="First Name"
+                        style={{ borderBottomWidth: 1, borderColor: '#ddd', marginBottom: 4 }}
+                      />
+                      <TextInput
+                        value={lastName}
+                        onChangeText={setLastName}
+                        placeholder="Last Name"
+                        style={{ borderBottomWidth: 1, borderColor: '#ddd', marginBottom: 4 }}
+                      />
+                    </>
+                  ) : (
+                    <Text className="text-gray-900 text-lg font-bold">{user?.firstName} {user?.lastName}</Text>
+                  )}
+                  <Text className="text-gray-600 text-sm">{user?.emailAddresses?.[0]?.emailAddress}</Text>
                   <View className="flex-row items-center mt-1">
                     <FontAwesome5 name="star" size={12} color="#fbbf24" solid />
                     <Text className="text-gray-500 text-sm ml-1">4.9 • 127 rides</Text>
                   </View>
                 </View>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate("ProfileScreen")}
+                  onPress={() => setEditing(!editing)}
                   className="w-8 h-8 bg-gray-100 rounded-full items-center justify-center border border-gray-200"
                 >
-                  <Feather name="edit-2" size={16} color="#6b7280" />
+                  <Feather name={editing ? "check" : "edit-2"} size={16} color="#6b7280" />
                 </TouchableOpacity>
               </View>
+              {editing && (
+                <TouchableOpacity
+                  onPress={handleSave}
+                  style={{ marginTop: 10, backgroundColor: '#6366f1', padding: 8, borderRadius: 8 }}
+                  disabled={saving}
+                >
+                  <Text style={{ color: 'white', textAlign: 'center', fontWeight: 'bold' }}>{saving ? 'Saving...' : 'Save'}</Text>
+                </TouchableOpacity>
+              )}
             </LinearGradient>
           </BlurView>
         </View>
