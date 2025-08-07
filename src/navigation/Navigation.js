@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import AuthStack from './AuthStack';
 import DriverStack from './DriverStack';
 import PassengerStack from './PassengerStack';
