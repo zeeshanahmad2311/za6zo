@@ -1,25 +1,65 @@
-import { FontAwesome } from '@expo/vector-icons'; // or use any icon set you prefer
-import { Image, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect } from 'react';
+import { FontAwesome } from '@expo/vector-icons';
+import {
+  Image,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  Alert,
+} from 'react-native';
+import * as WebBrowser from 'expo-web-browser';
+import * as AuthSession from 'expo-auth-session';
+import { useSSO } from '@clerk/clerk-expo';
+
+WebBrowser.maybeCompleteAuthSession();
+
+const useWarmUpBrowser = () => {
+  useEffect(() => {
+    WebBrowser.warmUpAsync();
+    return () => {
+      WebBrowser.coolDownAsync();
+    };
+  }, []);
+};
 
 export default function CompactLoginScreen({ navigation }) {
+  useWarmUpBrowser();
+  const { startSSOFlow } = useSSO();
+
+  const onGoogleSignIn = useCallback(async () => {
+    try {
+      const { createdSessionId, setActive } = await startSSOFlow({
+        strategy: 'oauth_google',
+        redirectUrl: AuthSession.makeRedirectUri(),
+      });
+
+      if (createdSessionId) {
+        await setActive?.({ session: createdSessionId });
+        Alert.alert('Success', 'You are now signed in with Google!');
+        // You can redirect here, for example:
+        // navigation.replace('Home');
+      } else {
+        Alert.alert('Verification Needed', 'Please complete all steps.');
+      }
+    } catch (err) {
+      console.error('Google SSO Error:', err);
+      Alert.alert('Google Sign-In Failed', 'Something went wrong.');
+    }
+  }, []);
+
   return (
     <View className="flex-1 bg-white px-6 justify-center">
-      {/* Header */}
-      {/* Header */}
-      {/* Header */}
-      {/* Header */}
       {/* Header */}
       <View className="items-center mb-8">
         <View className="w-16 h-16 bg-gray-50 rounded-[10px] border border-gray-100 justify-center items-center mb-4 overflow-hidden">
           <Image
-           source={require('../../assets/images/Za6zo.png')}
-           style={{ width: 80, height: 80, resizeMode: 'contain' }}
+            source={require('../../assets/images/Za6zo.png')}
+            style={{ width: 80, height: 80, resizeMode: 'contain' }}
           />
         </View>
-        <View className="items-center">
-          <Text className="text-2xl font-bold text-gray-900 mb-1">Welcorrrrrrrrrme</Text>
-          <Text className="text-sm text-gray-500">Access your account</Text>
-        </View>
+        <Text className="text-2xl font-bold text-gray-900 mb-1">Welcome</Text>
+        <Text className="text-sm text-gray-500">Access your account</Text>
       </View>
 
       {/* Email Input */}
@@ -57,7 +97,7 @@ export default function CompactLoginScreen({ navigation }) {
       </View>
 
       {/* Continue Button */}
-      <TouchableOpacity 
+      <TouchableOpacity
         className="h-12 bg-gray-900 rounded-[10px] justify-center items-center mb-6"
         onPress={() => navigation.navigate('OTP')}
       >
@@ -67,9 +107,14 @@ export default function CompactLoginScreen({ navigation }) {
       {/* Social Login */}
       <Text className="text-center text-xs text-gray-500 mb-4">Continue with</Text>
       <View className="flex-row justify-center mb-8">
-        <TouchableOpacity className="w-12 h-12 bg-white rounded-[10px] border border-gray-200 justify-center items-center mx-2">
+        <TouchableOpacity
+          className="w-12 h-12 bg-white rounded-[10px] border border-gray-200 justify-center items-center mx-2"
+          onPress={onGoogleSignIn}
+        >
           <FontAwesome name="google" size={20} color="#A0AEC0" />
         </TouchableOpacity>
+
+        {/* Placeholders for future integration */}
         <TouchableOpacity className="w-12 h-12 bg-white rounded-[10px] border border-gray-200 justify-center items-center mx-2">
           <FontAwesome name="facebook" size={20} color="#A0AEC0" />
         </TouchableOpacity>
@@ -78,9 +123,6 @@ export default function CompactLoginScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      {/* Footer */}
-      {/* Footer */}
-      {/* Footer */}
       {/* Footer */}
       <View className="flex-row justify-center pb-4">
         <Text className="text-sm text-gray-500">No account?</Text>
