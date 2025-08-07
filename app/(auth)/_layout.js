@@ -1,12 +1,19 @@
-import { Redirect, Stack } from 'expo-router'
-import { useAuth } from '@clerk/clerk-expo'
+// app/(auth)/_layout.js
+import { useAuth } from '@clerk/clerk-expo';
+import { Redirect, Stack } from 'expo-router';
 
 export default function AuthLayout() {
-  const { isSignedIn } = useAuth()
+  const { isLoaded, isSignedIn } = useAuth();
 
-  if (isSignedIn) {
-    return <Redirect href="/" />
+  // Wait for Clerk to load
+  if (!isLoaded) {
+    return null; // or a loading spinner
   }
 
-  return <Stack />
+  // If signed in, redirect to home
+  if (isSignedIn) {
+    return <Redirect href="/" />;
+  }
+
+  return <Stack />;
 }

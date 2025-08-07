@@ -41,7 +41,6 @@
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-native": "0.79.5",
-    "react-native-dotenv": "^3.4.11",
     "react-native-gesture-handler": "~2.24.0",
     "react-native-google-places-autocomplete": "^2.5.7",
     "react-native-maps": "^1.20.1",
@@ -65,6 +64,7 @@
     "eslint-config-expo": "~9.2.0",
     "postcss": "^8.5.6",
     "prettier-plugin-tailwindcss": "^0.5.11",
+    "react-native-dotenv": "^3.4.11",
     "tailwindcss": "3",
     "typescript": "~5.8.3"
   },

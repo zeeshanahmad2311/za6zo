@@ -1,3 +1,21 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --background: 1 0 0;               /* white */
+  --foreground: 0.145 0 0;           /* near black */
+  --primary: 0.205 0 0;              /* dark gray */
+  --primary-foreground: 0.985 0 0;   /* white */
+  --destructive: 0.577 0.245 27.325; /* red */
+  --border: 0.922 0 0;               /* light gray */
+}
+
+.dark {
+  --background: 0.145 0 0;           /* dark */
+  --foreground: 0.985 0 0;           /* white */
+  --primary: 0.628 0.258 29.234;     /* orange */
+  --primary-foreground: 1 0 0;       /* white */
+  --destructive: 0.704 0.191 22.216; /* red */
+  --border: 0.275 0 0;               /* dark gray */
+}

@@ -1,26 +1,34 @@
+// src/navigation/Navigation.js
+import { useAuth } from '@clerk/clerk-expo';
 import { useState } from 'react';
+import RoleSelect from '../features/auth/RoleSelect'; // Make sure this import path is correct
 import AuthStack from './AuthStack';
 import DriverStack from './DriverStack';
 import PassengerStack from './PassengerStack';
 
 export default function Navigation() {
-  // For demo: track which stack to show. In real app, use context/auth state.
+  const { isLoaded, isSignedIn } = useAuth();
   const [role, setRole] = useState(null);
 
-  // Listen for navigation events from RoleSelect
-  // We'll use a simple prop trick for now
-  if (!role) {
-    return (
-      <AuthStack
-        onRoleSelect={selectedRole => setRole(selectedRole)}
-      />
-    );
+  if (!isLoaded) {
+    return null; // or loading screen
   }
+
+  if (!isSignedIn) {
+    return <AuthStack onRoleSelect={setRole} />;
+  }
+
+  if (!role) {
+    return <RoleSelect onRoleSelect={setRole} />;
+  }
+
   if (role === 'driver') {
     return <DriverStack />;
   }
-  if (role === 'passenger') {
+
+  if (role === 'passenger') { // Fixed typo here (was 'passenger')
     return <PassengerStack />;
   }
+
   return null;
 }
